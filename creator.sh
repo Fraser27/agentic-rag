@@ -164,6 +164,7 @@ then
             break
         else
             echo "Current Status $stack_status"
+        fi
         ((j++))
     done
 fi
