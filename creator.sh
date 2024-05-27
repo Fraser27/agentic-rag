@@ -144,7 +144,8 @@ cd agentic-rag
 echo "--- pip install requirements ---"
 python3 -m pip install -r requirements.txt
 
-domain_endpoint = 'https://dummy-endpoint'
+domain_endpoint='https://dummy-endpoint'
+
 if [ $oss_selected = "yes" ]
 then
     aws cloudformation create-stack --stack-name $oss_stack_name --template-body file://opensearch-cluster.yaml --parameters InstanceType=t3.medium.search,InstanceCount=3,OSPassword=Sillachi27,OSUsername=admin --capabilities CAPABILITY_NAMED_IAM
