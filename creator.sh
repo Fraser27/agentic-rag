@@ -158,7 +158,7 @@ then
         echo 'Wait for 30 seconds. Provisioning Amazon Opensearch domain'
         stack_status=$(aws cloudformation describe-stacks --stack-name $oss_stack_name --query "Stacks[0].StackStatus")
         echo "Curr Status $stack_status"
-        if [[ $stack_status == *"COMPLETE"* || stack_status == *"FAILED"* ]]
+        if [[ $stack_status =~ "COMPLETE" || stack_status =~ "FAILED" ]]
         then
             echo "Build complete: $oss_stack_name : status $stack_status"
             break
