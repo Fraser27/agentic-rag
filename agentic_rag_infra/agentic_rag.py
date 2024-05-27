@@ -17,13 +17,13 @@ class AgenticRAG(Stack):
         is_opensearch_serverless = self.node.try_get_context("is_aoss")
         
         stack_deployed = None
-        bedrock_stack = BedrockLayerStack(self, f'agentic_rag_container_{env_name}')
+        bedrock_stack = BedrockLayerStack(self, f'agentic_rag_layer_{env_name}')
         stack_deployed = bedrock_stack
         self.tag_my_stack(stack_deployed)
 
         if is_opensearch_serverless == 'yes':
             # Opensearch Serverless config
-            oss_stack = OpensearchVectorDbStack(self, f"vector_db_{env_name}")
+            oss_stack = OpensearchVectorDbStack(self, f"agentic_vector_db_{env_name}")
             self.tag_my_stack(oss_stack)
             stack_deployed.add_dependency(oss_stack)
 
