@@ -26,7 +26,7 @@ oss_stack_name='agentic-rag-oss-stack'
 # oss_params
 InstanceType=t3.medium.search
 InstanceCount=3
-OSPassword=Sillachi27
+OSPassword=Sillachi@27
 OSUsername=admin 
 
 if [ -z "$deployment_region" ]
@@ -155,10 +155,12 @@ domain_endpoint='https://dummy-endpoint'
 
 if [ $oss_selected = "yes" ]
 then
+    read -p "$Green Enter password for Amazon Opensearch cluster (The master user password must contain at least one uppercase letter, one lowercase letter, one number, and one special character) $NC: " OSPassword
+    echo $OSPassword
     aws cloudformation create-stack --stack-name $oss_stack_name --template-body file://opensearch-cluster.yaml --parameters ParameterKey=InstanceType,ParameterValue=$InstanceType ParameterKey=InstanceCount,ParameterValue=$InstanceCount ParameterKey=OSPassword,ParameterValue=$OSPassword ParameterKey=OSUsername,ParameterValue=$OSUsername --capabilities CAPABILITY_NAMED_IAM
     echo "Check build status every 30 seconds. Wait for codebuild to finish"
     j=0
-    stack_status=CREATE_IN_PROGRESS
+    stack_status=READY
     while [ $j -lt 50 ];
     do 
         sleep 30
@@ -168,6 +170,11 @@ then
         if [[ $stack_status =~ "COMPLETE" || stack_status =~ "FAILED" ]]
         then
             echo "Build complete: $oss_stack_name : status $stack_status"
+            if [$stack_status != 'CREATE_COMPLETE']
+            then
+               echo "Exiting Due to Build failure: $oss_stack_name"
+               exit 1
+            fi
             break
         else
             echo "Current Status $stack_status"
