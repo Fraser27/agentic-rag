@@ -155,7 +155,12 @@ domain_endpoint='https://dummy-endpoint'
 
 if [ $oss_selected = "yes" ]
 then
-    read -p "$Green Enter password for Amazon Opensearch cluster (The master user password must contain at least one uppercase letter, one lowercase letter, one number, and one special character) $NC: " OSPassword
+    echo '*************************************************************'
+    echo '*************************************************************'
+    echo '*************************************************************'
+    printf '$Green'        
+    read -p "Enter password for Amazon Opensearch cluster (The master user password must contain at least one uppercase letter, one lowercase letter, one number, and one special character) $NC: " OSPassword
+    printf '$NC'
     echo $OSPassword
     aws cloudformation create-stack --stack-name $oss_stack_name --template-body file://opensearch-cluster.yaml --parameters ParameterKey=InstanceType,ParameterValue=$InstanceType ParameterKey=InstanceCount,ParameterValue=$InstanceCount ParameterKey=OSPassword,ParameterValue=$OSPassword ParameterKey=OSUsername,ParameterValue=$OSUsername --capabilities CAPABILITY_NAMED_IAM
     echo "Check build status every 30 seconds. Wait for codebuild to finish"
