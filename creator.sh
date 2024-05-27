@@ -161,7 +161,7 @@ then
             echo "Build complete: $oss_stack_name : status $stack_status"
             break
         else
-            printf("Current Status $stack_status")
+            echo "Current Status $stack_status"
         ((j++))
     done
     domain_endpoint=$(aws cloudformation describe-stacks --stack-name $oss_stack_name --query "Stacks[0].Outputs[0].OutputValue")
@@ -223,7 +223,7 @@ then
     fi
     
     cdk deploy -c environment_name=$infra_env -c collection_endpoint=$COLLECTION_ENDPOINT -c current_timestamp=$CURRENT_UTC_TIMESTAMP -c secret_api_key=$secret_api_key -c is_aoss=$aoss_selected -c is_oss=$oss_selected -c embed_model_id=$embed_model_id ApiGwLlmsLambda"$infra_env"Stack --require-approval never
-    
+
 else
     echo "Exiting. Build did not succeed."
 fi
