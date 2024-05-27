@@ -165,8 +165,6 @@ then
             echo "Current Status $stack_status"
         ((j++))
     done
-
-    domain_endpoint=$(aws cloudformation describe-stacks --stack-name $oss_stack_name --query "Stacks[0].Outputs[0].OutputValue")
 fi
 
 echo "--- CDK synthesize ---"
@@ -221,6 +219,7 @@ then
 
     if [ $oss_selected = "yes" ]
     then
+        domain_endpoint=$(aws cloudformation describe-stacks --stack-name $oss_stack_name --query "Stacks[0].Outputs[0].OutputValue")
         COLLECTION_ENDPOINT=$domain_endpoint
     fi
     
