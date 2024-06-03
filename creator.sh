@@ -21,7 +21,7 @@ deployment_region=$(curl -s http://169.254.169.254/task/AvailabilityZone | sed '
 embed_model_id='amazon.titan-embed-image-v1'
 aoss_selected='no'
 oss_selected='no'
-oss_stack_name='agentic-rag-oss-stack'
+oss_stack_name='agentic-rag-oss-stack-'$infra_env
 OSDomainName=$(jq '.context.'$infra_env'.oss_domain_name' cdk.json -r)
 
 # oss_params
@@ -140,17 +140,16 @@ then
     printf "$Green Enter password for Amazon Opensearch cluster (The master user password must contain at least one uppercase letter, one lowercase letter, one number, and one special character) $NC"        
     read OSPassword
     
-    stack_exists=$(aws cloudformation describe-stacks --stack-name "$oss_stack_name" --query 'Stacks[0].StackStatus')
+    stack_exists=$(aws cloudformation describe-stacks --stack-name "$oss_stack_name" --region "$deployment_region" --query 'Stacks[0].StackStatus')
     printf "$Green Deploying OSS cluster with password $OSPassword $NC"
     if [ -z "$stack_exists"]
     then
         echo "Creating new CloudFormation stack: $oss_stack_name"
-        aws cloudformation create-stack --stack-name $oss_stack_name --template-body file://opensearch-cluster.yaml --parameters ParameterKey=InstanceType,ParameterValue=$InstanceType ParameterKey=InstanceCount,ParameterValue=$InstanceCount ParameterKey=OSPassword,ParameterValue=$OSPassword ParameterKey=OSUsername,ParameterValue=$OSUsername ParameterKey=OSDomainName,ParameterValue=$OSDomainName --capabilities CAPABILITY_NAMED_IAM
+        aws cloudformation create-stack --stack-name $oss_stack_name --region "$deployment_region" --template-body file://opensearch-cluster.yaml --parameters ParameterKey=InstanceType,ParameterValue=$InstanceType ParameterKey=InstanceCount,ParameterValue=$InstanceCount ParameterKey=OSPassword,ParameterValue=$OSPassword ParameterKey=OSUsername,ParameterValue=$OSUsername ParameterKey=OSDomainName,ParameterValue=$OSDomainName --capabilities CAPABILITY_NAMED_IAM
         
     else
-        aws cloudformation delete-stack --stack-name $oss_stack_name
         echo "Updating existing CloudFormation stack: $oss_stack_name"
-        aws cloudformation update-stack --stack-name $oss_stack_name --template-body file://opensearch-cluster.yaml --parameters ParameterKey=InstanceType,ParameterValue=$InstanceType ParameterKey=InstanceCount,ParameterValue=$InstanceCount ParameterKey=OSPassword,ParameterValue=$OSPassword ParameterKey=OSUsername,ParameterValue=$OSUsername ParameterKey=OSDomainName,ParameterValue=$OSDomainName --capabilities CAPABILITY_NAMED_IAM
+        aws cloudformation update-stack --stack-name $oss_stack_name --region "$deployment_region" --template-body file://opensearch-cluster.yaml --parameters ParameterKey=InstanceType,ParameterValue=$InstanceType ParameterKey=InstanceCount,ParameterValue=$InstanceCount ParameterKey=OSPassword,ParameterValue=$OSPassword ParameterKey=OSUsername,ParameterValue=$OSUsername ParameterKey=OSDomainName,ParameterValue=$OSDomainName --capabilities CAPABILITY_NAMED_IAM
 
     fi
     
@@ -161,7 +160,7 @@ then
     do 
         echo 'Wait for 120 seconds. Provisioning Amazon Opensearch domain'
         sleep 120
-        stack_status=$(aws cloudformation describe-stacks --stack-name $oss_stack_name --query "Stacks[0].StackStatus")
+        stack_status=$(aws cloudformation describe-stacks --stack-name $oss_stack_name --region "$deployment_region" --query "Stacks[0].StackStatus")
         echo "Curr Status $stack_status"
         if [[ $stack_status =~ "COMPLETE" || stack_status =~ "FAILED" ]]
         then
