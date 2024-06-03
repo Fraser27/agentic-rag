@@ -11,7 +11,7 @@ Parameters:
   InstanceCount:
     Description: Number of Instances for OpenSearch Cluster
     Type: Number
-    Default: 3
+    Default: 2
   
   OSUsername:
     Description: Username of the OS Admin
