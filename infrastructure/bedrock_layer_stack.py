@@ -24,6 +24,7 @@ class BedrockLayerStack(NestedStack):
         opensearchpy_layer_name = config_details['opensearchpy_layer']
         langchainpy_layer_name = config_details['langchainpy_layer_name']
         aws4auth_layer_name = config_details['aws4auth_layer']
+        pdf2image_layer_name = config_details['pdf2image_layer']
         wrangler_layer_name = config_details["wrangler_layer"]
 
         account_id = os.getenv("CDK_DEFAULT_ACCOUNT")
@@ -50,6 +51,7 @@ class BedrockLayerStack(NestedStack):
                 "boto3_bedrock_layer_name": _codebuild.BuildEnvironmentVariable(value = boto3_bedrock_layer_name),
                 "opensearchpy_layer_name": _codebuild.BuildEnvironmentVariable(value = opensearchpy_layer_name),
                 "aws4auth_layer_name": _codebuild.BuildEnvironmentVariable(value = aws4auth_layer_name),
+                "pdf2image_layer_name": _codebuild.BuildEnvironmentVariable(value = pdf2image_layer_name),
                 "langchainpy_layer_name":  _codebuild.BuildEnvironmentVariable(value = langchainpy_layer_name),
                 "wrangler_layer_name": _codebuild.BuildEnvironmentVariable(value = wrangler_layer_name),
                 "account_id" : _codebuild.BuildEnvironmentVariable(value = account_id),

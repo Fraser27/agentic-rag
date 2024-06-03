@@ -25,7 +25,7 @@ class ApiGw_Stack(Stack):
         is_opensearch = self.node.try_get_context("is_aoss")
         embed_model_id = self.node.try_get_context("embed_model_id")
 
-        html_header_name = 'Llama2-7B'
+        html_header_name = 'Amazon Bedrock'
         try:
             collection_endpoint = self.node.get_context("collection_endpoint")
             collection_endpoint = collection_endpoint.replace("https://", "")
@@ -38,15 +38,15 @@ class ApiGw_Stack(Stack):
         print(f'Secret Key={secret_api_key}')
         
         bucket_name = f'{env_params["s3_images_data"]}-{account_id}-{region}'
-        html_header_name = 'Amazon Bedrock'
+        
         # Define API's
         # Base URL
-        api_description = "RAG with Opensearch Serverless"
+        api_description = "Agentic RAG APIs"
 
         
         rag_llm_root_api = _cdk.aws_apigateway.RestApi(
             self,
-            f"rag-llm-api-{env_name}",
+            env_params["agentic-rag-api"],
             deploy=True,
             endpoint_types=[_cdk.aws_apigateway.EndpointType.REGIONAL],
             deploy_options={
@@ -57,12 +57,14 @@ class ApiGw_Stack(Stack):
             description=api_description,
         )
 
+        secure_key = _cdk.aws_apigateway.ApiKey(self,
+                                                f"agent-rag-api-{env_name}",
+                                                api_key_name=secret_api_key,
+                                                enabled=True,
+                                                value=secret_api_key,
+                                                description="Secure access to API's")
         
-
-        secure_key = _cdk.aws_apigateway.ApiKey(self, f"rag-api-key-{env_name}", api_key_name=secret_api_key, enabled=True,
-                                                    value=secret_api_key,
-                                                    description="Secure access to API's")
-        plan = _cdk.aws_apigateway.UsagePlan(self, f"rag-api-plan-{env_name}", 
+        plan = _cdk.aws_apigateway.UsagePlan(self, f"agent-rag-api-plan-{env_name}", 
                                             throttle=_cdk.aws_apigateway.ThrottleSettings(burst_limit=50, rate_limit=200),
                                             quota=_cdk.aws_apigateway.QuotaSettings(limit=500, period=_cdk.aws_apigateway.Period.MONTH),
                                             api_stages= [_cdk.aws_apigateway.UsagePlanPerApiStage(api=rag_llm_root_api,
@@ -78,7 +80,7 @@ class ApiGw_Stack(Stack):
         print(rest_endpoint_url)
         
         # Lets create an S3 bucket to store Images and also an API call
-                    # create s3 bucket to store ocr related objects
+        # create s3 bucket to store ocr related objects
         self.images_bucket = _s3.Bucket(self,
                                         id=env_params["s3_images_data"],
                                         bucket_name=bucket_name,
@@ -130,12 +132,6 @@ class ApiGw_Stack(Stack):
         langchainpy_layer = _lambda.LayerVersion.from_layer_version_arn(self, f'langchain-layer-{env_name}',
                                                    f'arn:aws:lambda:{region}:{account_id}:layer:{env_params["langchainpy_layer_name"]}:1')
         
-        wrangler_regions = self.node.try_get_context("wrangler_regions")
-        wrangler_layer = None
-        if region in wrangler_regions:
-            wrangler_arn = wrangler_regions[region]
-            wrangler_layer = _lambda.LayerVersion.from_layer_version_arn(self, f'wrangler-layer-{env_name}', wrangler_arn)
-        
         print('--- Amazon Bedrock Deployment ---')
         
         
@@ -171,36 +167,16 @@ class ApiGw_Stack(Stack):
                                             'REST_ENDPOINT_URL': rest_endpoint_url,
                                             'IS_RAG_ENABLED': is_opensearch,
                                             'S3_BUCKET_NAME': bucket_name,
-                                            'WRANGLER_NAME': env_params['bedrock_wrangler_function_name'],
-                                            'IS_WRANGLER_ENABLED': 'yes' if wrangler_layer is not None else 'no',
                                             'EMBED_MODEL_ID': embed_model_id
                               },
                               memory_size=3000,
                               layers= [boto3_bedrock_layer , opensearchpy_layer, aws4auth_layer, langchainpy_layer]
                             )
         
-        if wrangler_layer is not None:
-            aws_wrangler_lambda_function = _lambda.Function(self, f'llm-bd-wrangler-{env_name}',
-                              function_name=env_params['bedrock_wrangler_function_name'],
-                              code = _cdk.aws_lambda.Code.from_asset(os.path.join(os.getcwd(), 'artifacts/bedrock_lambda/wrangler_lambda/')),
-                              runtime=_lambda.Runtime.PYTHON_3_9,
-                              handler="aws_wrangler.handler",
-                              role=custom_lambda_role,
-                              timeout=_cdk.Duration.seconds(300),
-                              description="AWS Wrangler read files in multiple formats",
-                              memory_size=3000,
-                              layers= [wrangler_layer]
-                            )
-            wrangler_policy = _iam.PolicyStatement(
-                actions=[
-                 "s3:*"],
-                resources=["*"],
-            )
-            aws_wrangler_lambda_function.add_to_role_policy(wrangler_policy)
         
-        websocket_api = _cdk.aws_apigatewayv2.CfnApi(self, f'bedrock-streaming-response-{env_name}',
+        websocket_api = _cdk.aws_apigatewayv2.CfnApi(self, f'agentic-rag-streaming-{env_name}',
                                     protocol_type='WEBSOCKET',
-                                    name=f'Bedrock-streaming-{env_name}',
+                                    name=env_params['agentic-rag-streaming-socket'],
                                     route_selection_expression='$request.body.action'
                                     )
         

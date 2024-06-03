@@ -167,8 +167,8 @@ then
     stack_status=READY
     while [ $j -lt 50 ];
     do 
-        sleep 30
-        echo 'Wait for 30 seconds. Provisioning Amazon Opensearch domain'
+        echo 'Wait for 120 seconds. Provisioning Amazon Opensearch domain'
+        sleep 120
         stack_status=$(aws cloudformation describe-stacks --stack-name $oss_stack_name --query "Stacks[0].StackStatus")
         echo "Curr Status $stack_status"
         if [[ $stack_status =~ "COMPLETE" || stack_status =~ "FAILED" ]]
@@ -185,6 +185,8 @@ then
         fi
         ((j++))
     done
+else
+    aws cloudformation delete-stack --stack-name $oss_stack_name
 fi
 
 echo "--- CDK synthesize ---"
