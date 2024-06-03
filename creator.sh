@@ -147,12 +147,8 @@ then
         echo "Creating new CloudFormation stack: $oss_stack_name"
         aws cloudformation create-stack --stack-name $oss_stack_name --region "$deployment_region" --template-body file://opensearch-cluster.yaml --parameters ParameterKey=InstanceType,ParameterValue=$InstanceType ParameterKey=InstanceCount,ParameterValue=$InstanceCount ParameterKey=OSPassword,ParameterValue=$OSPassword ParameterKey=OSUsername,ParameterValue=$OSUsername ParameterKey=OSDomainName,ParameterValue=$OSDomainName --capabilities CAPABILITY_NAMED_IAM
         
-    elif  [ "$stack_status" = "CREATE_COMPLETE" ]
-        echo "Creating new CloudFormation stack: $oss_stack_name"
-        aws cloudformation create-stack --stack-name $oss_stack_name --region "$deployment_region" --template-body file://opensearch-cluster.yaml --parameters ParameterKey=InstanceType,ParameterValue=$InstanceType ParameterKey=InstanceCount,ParameterValue=$InstanceCount ParameterKey=OSPassword,ParameterValue=$OSPassword ParameterKey=OSUsername,ParameterValue=$OSUsername ParameterKey=OSDomainName,ParameterValue=$OSDomainName --capabilities CAPABILITY_NAMED_IAM
-    
     elif [ "$stack_status" != "CREATE_COMPLETE" ]
-        
+    then
             printf "\n"
             echo $oss_stack_name status is $stack_exists
             printf "$Green $oss_stack_name which contains the Opensearch vector database is in  "$stack_status" state. Do you want to delete the stack ? $NC"
@@ -189,12 +185,11 @@ then
                 esac
                 break
             done
-        else
+    else
             printf "$Green Updating existing $oss_stack_name stack $NC"
             aws cloudformation update-stack --stack-name $oss_stack_name --region "$deployment_region" --template-body file://opensearch-cluster.yaml --parameters ParameterKey=InstanceType,ParameterValue=$InstanceType ParameterKey=InstanceCount,ParameterValue=$InstanceCount ParameterKey=OSPassword,ParameterValue=$OSPassword ParameterKey=OSUsername,ParameterValue=$OSUsername ParameterKey=OSDomainName,ParameterValue=$OSDomainName --capabilities CAPABILITY_NAMED_IAM
             printf "\n"
         
-        fi
     fi
     
     printf "$Green Check stack deployment status every 60 seconds $NC"
