@@ -26,7 +26,7 @@ OSDomainName=$(jq '.context.'$infra_env'.oss_domain_name' cdk.json -r)
 
 # oss_params
 InstanceType=t3.medium.search
-InstanceCount=3
+InstanceCount=2
 OSPassword=Sillachi@27
 OSUsername=admin 
 
