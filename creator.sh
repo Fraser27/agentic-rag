@@ -22,6 +22,7 @@ embed_model_id='amazon.titan-embed-image-v1'
 aoss_selected='no'
 oss_selected='no'
 oss_stack_name='agentic-rag-oss-stack'
+OSDomainName=$(jq '.context.'$infra_env'.oss_domain_name' cdk.json -r)
 
 # oss_params
 InstanceType=t3.medium.search
@@ -111,8 +112,7 @@ do
     esac
     break
 done
-    
-
+ 
 echo '*************************************************************'
 echo ' '        
     
@@ -132,37 +132,16 @@ then
     exit
 fi
 
-echo ' '
-echo '*************************************************************'
-echo ' '
-printf "$Green Press Enter to proceed with deployment else ctrl+c to cancel $NC "
-read -p " "
-
-cd ..
-echo "--- Upgrading npm ---"
-sudo npm install n stable -g
-echo "--- Installing cdk ---"
-sudo npm install -g aws-cdk@2.91.0
-
-echo "--- Bootstrapping CDK on account in region $deployment_region ---"
-cdk bootstrap aws://$(aws sts get-caller-identity --query "Account" --output text)/$deployment_region
-
-cd agentic-rag
-echo "--- pip install requirements ---"
-python3 -m pip install -r requirements.txt
-
-domain_endpoint='https://dummy-endpoint'
-
 if [ $oss_selected = "yes" ]
 then
+    echo ' '
     echo '*************************************************************'
-    echo '*************************************************************'
-    
+    echo ' '
     printf "$Green Enter password for Amazon Opensearch cluster (The master user password must contain at least one uppercase letter, one lowercase letter, one number, and one special character) $NC"        
     read OSPassword
     printf "$Green Deploying OSS cluster with password $OSPassword $NC"
-    aws cloudformation create-stack --stack-name $oss_stack_name --template-body file://opensearch-cluster.yaml --parameters ParameterKey=InstanceType,ParameterValue=$InstanceType ParameterKey=InstanceCount,ParameterValue=$InstanceCount ParameterKey=OSPassword,ParameterValue=$OSPassword ParameterKey=OSUsername,ParameterValue=$OSUsername --capabilities CAPABILITY_NAMED_IAM
-    echo "Check build status every 30 seconds. Wait for codebuild to finish"
+    aws cloudformation create-stack --stack-name $oss_stack_name --template-body file://opensearch-cluster.yaml --parameters ParameterKey=InstanceType,ParameterValue=$InstanceType ParameterKey=InstanceCount,ParameterValue=$InstanceCount ParameterKey=OSPassword,ParameterValue=$OSPassword ParameterKey=OSUsername,ParameterValue=$OSUsername ParameterKey=OSDomainName,ParameterValue=$OSDomainName --capabilities CAPABILITY_NAMED_IAM
+    echo "Check build status every 120 seconds. Wait for codebuild to finish"
     j=0
     stack_status=READY
     while [ $j -lt 50 ];
@@ -188,6 +167,27 @@ then
 else
     aws cloudformation delete-stack --stack-name $oss_stack_name
 fi
+
+echo ' '
+echo '*************************************************************'
+echo ' '
+printf "$Green Press Enter to proceed with deployment else ctrl+c to cancel $NC "
+read -p " "
+
+cd ..
+echo "--- Upgrading npm ---"
+sudo npm install n stable -g
+echo "--- Installing cdk ---"
+sudo npm install -g aws-cdk@2.91.0
+
+echo "--- Bootstrapping CDK on account in region $deployment_region ---"
+cdk bootstrap aws://$(aws sts get-caller-identity --query "Account" --output text)/$deployment_region
+
+cd agentic-rag
+echo "--- pip install requirements ---"
+python3 -m pip install -r requirements.txt
+
+domain_endpoint='https://dummy-endpoint'
 
 echo "--- CDK synthesize ---"
 cdk synth -c environment_name=$infra_env -c current_timestamp=$CURRENT_UTC_TIMESTAMP -c secret_api_key=$secret_api_key -c is_aoss=$aoss_selected  -c is_oss=$oss_selected  -c embed_model_id=$embed_model_id

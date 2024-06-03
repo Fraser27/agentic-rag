@@ -25,7 +25,7 @@ Parameters:
   OSDomainName:
     Description: Domain name for OpenSearch
     Type: String
-    Default: opensearch-agentic-rag-domain 
+    Default: oss-agentic-rag-domain 
     
 Outputs:
   OpenSearchEndpoint:

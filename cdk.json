@@ -84,7 +84,8 @@
       "yfinance_layer_name": "yfinance-layer",
       "pandas_layer_name": "pandas-layer",
       "agentic-rag-streaming-socket": "agentic-rag-stream-socket",
-      "agentic-rag-api": "agentic-rag-api"
+      "agentic-rag-api": "agentic-rag-api",
+      "oss_domain_name": "oss-rag-dev-store"
     },
     "qa": {
       "ecr_repository_name": "lambda_rag_repo_qa",
@@ -107,7 +108,8 @@
       "yfinance_layer_name": "yfinance-layer",
       "pandas_layer_name": "pandas-layer",
       "agentic-rag-streaming-socket": "agentic-rag-stream-socket",
-      "agentic-rag-api": "agentic-rag-api"
+      "agentic-rag-api": "agentic-rag-api",
+      "oss_domain_name": "oss-rag-qa-store"
     },
     "sandbox": {
       "ecr_repository_name": "lambda_rag_repo_sandbox",
@@ -130,7 +132,8 @@
       "yfinance_layer_name": "yfinance-layer",
       "pandas_layer_name": "pandas-layer",
       "agentic-rag-streaming-socket": "agentic-rag-stream-socket",
-      "agentic-rag-api": "agentic-rag-api"
+      "agentic-rag-api": "agentic-rag-api",
+      "oss_domain_name": "oss-rag-sb-store"
     }
   }
 }
