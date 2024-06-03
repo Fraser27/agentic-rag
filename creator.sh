@@ -148,7 +148,7 @@ then
         aws cloudformation create-stack --stack-name $oss_stack_name --region "$deployment_region" --template-body file://opensearch-cluster.yaml --parameters ParameterKey=InstanceType,ParameterValue=$InstanceType ParameterKey=InstanceCount,ParameterValue=$InstanceCount ParameterKey=OSPassword,ParameterValue=$OSPassword ParameterKey=OSUsername,ParameterValue=$OSUsername ParameterKey=OSDomainName,ParameterValue=$OSDomainName --capabilities CAPABILITY_NAMED_IAM
         
     else
-        if [ $stack_status != 'CREATE_COMPLETE' ]
+        if [ $stack_status != "CREATE_COMPLETE" ]
         then
             printf "$Red $oss_stack_name which contains the Opensearch vector database is in $stack_status state. Do you want to delete the stack ? $NC"
             printf "\n"
@@ -182,6 +182,11 @@ then
                 esac
                 break
             done
+        else
+            printf "$Green Updating existing $oss_stack_name stack $NC"
+            aws cloudformation update-stack --stack-name $oss_stack_name --region "$deployment_region" --template-body file://opensearch-cluster.yaml --parameters ParameterKey=InstanceType,ParameterValue=$InstanceType ParameterKey=InstanceCount,ParameterValue=$InstanceCount ParameterKey=OSPassword,ParameterValue=$OSPassword ParameterKey=OSUsername,ParameterValue=$OSUsername ParameterKey=OSDomainName,ParameterValue=$OSDomainName --capabilities CAPABILITY_NAMED_IAM
+            printf "\n"
+        
         fi
     fi
     
@@ -197,10 +202,12 @@ then
         if [[ $stack_status =~ "COMPLETE" || stack_status =~ "FAILED" ]]
         then
             echo "Build complete: $oss_stack_name : status $stack_status"
-            if [ $stack_status != 'CREATE_COMPLETE' ]
+            if [ $stack_status != "CREATE_COMPLETE" ]
             then
                 echo "Exiting Due to Build failure: $oss_stack_name"
                 exit 1
+            else
+              break
             fi
             break
         else
