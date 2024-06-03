@@ -162,8 +162,10 @@ then
                     printf "$Green Deleting existing $oss_stack_name stack  $NC"
                     aws cloudformation delete-stack --stack-name $oss_stack_name --region "$deployment_region"
                     printf "\n"
-                    printf "Wait for 60 seconds for stack deletion"
+                    printf "$Green Wait for 60 seconds for stack deletion $NC"
                     sleep 60
+                    aws cloudformation create-stack --stack-name $oss_stack_name --region "$deployment_region" --template-body file://opensearch-cluster.yaml --parameters ParameterKey=InstanceType,ParameterValue=$InstanceType ParameterKey=InstanceCount,ParameterValue=$InstanceCount ParameterKey=OSPassword,ParameterValue=$OSPassword ParameterKey=OSUsername,ParameterValue=$OSUsername ParameterKey=OSDomainName,ParameterValue=$OSDomainName --capabilities CAPABILITY_NAMED_IAM
+                    printf "\n"
                     ;;
                     "No - Update existing stack")
                     printf "$Green Updating existing $oss_stack_name stack $NC"
