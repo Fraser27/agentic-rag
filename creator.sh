@@ -194,22 +194,22 @@ then
     
     printf "$Green Check stack deployment status every 60 seconds $NC"
     j=0
-    stack_status=READY
+    stack_status_1=READY
     while [ $j -lt 50 ];
     do 
         echo 'Wait for 60 seconds. Provisioning Amazon Opensearch domain'
         sleep 60
-        stack_status=$(aws cloudformation describe-stacks --stack-name $oss_stack_name --region "$deployment_region" --query "Stacks[0].StackStatus")
+        stack_status_1=$(aws cloudformation describe-stacks --stack-name $oss_stack_name --region "$deployment_region" --query "Stacks[0].StackStatus")
         echo "Current Amazon Opensearch cluster Status $stack_status"
-        if [ "$stack_status" =~ "COMPLETE" ] || [ "$stack_status" =~ "FAILED" ]
+        if [[ "$stack_status_1" =~ "COMPLETE"|"FAILED" ]]
         then
-            echo "Build complete: $oss_stack_name : status $stack_status"
-            if [ $stack_status != "CREATE_COMPLETE" ];then
-                echo "Exiting Due to Build failure: $oss_stack_name is in $stack_status state"
+            echo "Build complete: $oss_stack_name : status $stack_status_1"
+            if [ $stack_status_1 != "CREATE_COMPLETE" ];then
+                echo "Exiting Due to Build failure: $oss_stack_name is in $stack_status_1 state"
                 exit 1
             fi
         else
-            echo "Current Amazon Opensearch cluster Status $stack_status"
+            echo "Current Amazon Opensearch cluster Status $stack_status_1"
             
         fi
     ((j++))
