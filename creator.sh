@@ -139,8 +139,21 @@ then
     echo ' '
     printf "$Green Enter password for Amazon Opensearch cluster (The master user password must contain at least one uppercase letter, one lowercase letter, one number, and one special character) $NC"        
     read OSPassword
+    
+    stack_exists=$(aws cloudformation describe-stacks --stack-name "$oss_stack_name" --query 'Stacks[0].StackStatus')
     printf "$Green Deploying OSS cluster with password $OSPassword $NC"
-    aws cloudformation create-stack --stack-name $oss_stack_name --template-body file://opensearch-cluster.yaml --parameters ParameterKey=InstanceType,ParameterValue=$InstanceType ParameterKey=InstanceCount,ParameterValue=$InstanceCount ParameterKey=OSPassword,ParameterValue=$OSPassword ParameterKey=OSUsername,ParameterValue=$OSUsername ParameterKey=OSDomainName,ParameterValue=$OSDomainName --capabilities CAPABILITY_NAMED_IAM
+    if [ -z "$stack_exists"]
+    then
+        echo "Creating new CloudFormation stack: $oss_stack_name"
+        aws cloudformation create-stack --stack-name $oss_stack_name --template-body file://opensearch-cluster.yaml --parameters ParameterKey=InstanceType,ParameterValue=$InstanceType ParameterKey=InstanceCount,ParameterValue=$InstanceCount ParameterKey=OSPassword,ParameterValue=$OSPassword ParameterKey=OSUsername,ParameterValue=$OSUsername ParameterKey=OSDomainName,ParameterValue=$OSDomainName --capabilities CAPABILITY_NAMED_IAM
+        
+    else
+        aws cloudformation delete-stack --stack-name $oss_stack_name
+        echo "Updating existing CloudFormation stack: $oss_stack_name"
+        aws cloudformation update-stack --stack-name $oss_stack_name --template-body file://opensearch-cluster.yaml --parameters ParameterKey=InstanceType,ParameterValue=$InstanceType ParameterKey=InstanceCount,ParameterValue=$InstanceCount ParameterKey=OSPassword,ParameterValue=$OSPassword ParameterKey=OSUsername,ParameterValue=$OSUsername ParameterKey=OSDomainName,ParameterValue=$OSDomainName --capabilities CAPABILITY_NAMED_IAM
+
+    fi
+    
     echo "Check build status every 120 seconds. Wait for codebuild to finish"
     j=0
     stack_status=READY
@@ -155,17 +168,16 @@ then
             echo "Build complete: $oss_stack_name : status $stack_status"
             if [$stack_status != 'CREATE_COMPLETE']
             then
-               echo "Exiting Due to Build failure: $oss_stack_name"
-               exit 1
+                echo "Exiting Due to Build failure: $oss_stack_name"
+                exit 1
             fi
             break
         else
             echo "Current Status $stack_status"
         fi
         ((j++))
-    done
-else
-    aws cloudformation delete-stack --stack-name $oss_stack_name
+        done
+
 fi
 
 echo ' '
