@@ -201,19 +201,19 @@ then
         sleep 60
         stack_status=$(aws cloudformation describe-stacks --stack-name $oss_stack_name --region "$deployment_region" --query "Stacks[0].StackStatus")
         echo "Current Amazon Opensearch cluster Status $stack_status"
-        if [[ "$stack_status" =~ "COMPLETE" || "stack_status" =~ "FAILED" ]]
+        if [ $stack_status != "COMPLETE" ] || [ stack_status =~ "FAILED" ]
         then
             echo "Build complete: $oss_stack_name : status $stack_status"
             if [ $stack_status != "CREATE_COMPLETE" ];then
-                echo "Exiting Due to Build failure: $oss_stack_name"
+                echo "Exiting Due to Build failure: $oss_stack_name is in $stack_status state"
                 exit 1
             fi
             break
         else
             echo "Current Amazon Opensearch cluster Status $stack_status"
         fi
-        ((j++))
-        done
+    ((j++))
+    done
 
 fi
 
