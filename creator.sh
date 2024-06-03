@@ -85,7 +85,7 @@ echo ' '
 echo '*************************************************************'
 echo ' '
 
-printf "$Green Do you want to deploy Opensearch Serverless or Just try out Amazon Bedrock: $NC"
+printf "$Green Do you want to deploy Vector DB or just try out Amazon Bedrock: $NC"
 printf "\n"
 options=("Amazon Opensearch Serverless vector engine" "Amazon Opensearch - provisioned" "Quit")
 
@@ -201,7 +201,7 @@ then
         sleep 60
         stack_status=$(aws cloudformation describe-stacks --stack-name $oss_stack_name --region "$deployment_region" --query "Stacks[0].StackStatus")
         echo "Current Amazon Opensearch cluster Status $stack_status"
-        if [ $stack_status != "COMPLETE" ] || [ stack_status =~ "FAILED" ]
+        if [ "$stack_status" =~ "COMPLETE" ] || [ "$stack_status" =~ "FAILED" ]
         then
             echo "Build complete: $oss_stack_name : status $stack_status"
             if [ $stack_status != "CREATE_COMPLETE" ];then
