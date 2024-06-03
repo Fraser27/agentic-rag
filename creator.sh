@@ -163,6 +163,8 @@ then
                     printf "\n"
                     printf "$Green Wait for 60 seconds for stack deletion $NC"
                     sleep 60
+                    printf "\n"
+                    printf "$Green Creating new stack. Provision new Amazon Openseach cluster. $NC"
                     aws cloudformation create-stack --stack-name $oss_stack_name --region "$deployment_region" --template-body file://opensearch-cluster.yaml --parameters ParameterKey=InstanceType,ParameterValue=$InstanceType ParameterKey=InstanceCount,ParameterValue=$InstanceCount ParameterKey=OSPassword,ParameterValue=$OSPassword ParameterKey=OSUsername,ParameterValue=$OSUsername ParameterKey=OSDomainName,ParameterValue=$OSDomainName --capabilities CAPABILITY_NAMED_IAM
                     printf "\n"
                     ;;
@@ -200,7 +202,7 @@ then
         echo 'Wait for 60 seconds. Provisioning Amazon Opensearch domain'
         sleep 60
         stack_status=$(aws cloudformation describe-stacks --stack-name $oss_stack_name --region "$deployment_region" --query "Stacks[0].StackStatus")
-        echo "Curr Status $stack_status"
+        echo "Current Amazon Opensearch cluster Status $stack_status"
         if [[ "$stack_status" =~ "COMPLETE" || "stack_status" =~ "FAILED" ]]
         then
             echo "Build complete: $oss_stack_name : status $stack_status"
@@ -208,12 +210,10 @@ then
             then
                 echo "Exiting Due to Build failure: $oss_stack_name"
                 exit 1
-            else
-              break
             fi
             break
         else
-            echo "Current Status $stack_status"
+            echo "Current Amazon Opensearch cluster Status $stack_status"
         fi
         ((j++))
         done
