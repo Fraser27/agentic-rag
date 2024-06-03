@@ -142,7 +142,7 @@ then
     
     stack_exists=$(aws cloudformation describe-stacks --stack-name "$oss_stack_name" --region "$deployment_region" --query 'Stacks[0].StackStatus')
     printf "$Green Deploying OSS cluster with password $OSPassword $NC"
-    if [ -z "$stack_exists"]
+    if [ -z "$stack_exists" ]
     then
         echo "Creating new CloudFormation stack: $oss_stack_name"
         aws cloudformation create-stack --stack-name $oss_stack_name --region "$deployment_region" --template-body file://opensearch-cluster.yaml --parameters ParameterKey=InstanceType,ParameterValue=$InstanceType ParameterKey=InstanceCount,ParameterValue=$InstanceCount ParameterKey=OSPassword,ParameterValue=$OSPassword ParameterKey=OSUsername,ParameterValue=$OSUsername ParameterKey=OSDomainName,ParameterValue=$OSDomainName --capabilities CAPABILITY_NAMED_IAM
