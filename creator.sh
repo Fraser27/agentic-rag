@@ -149,6 +149,7 @@ then
         
     else
         if [ $stack_status != 'CREATE_COMPLETE' ]
+        then
             printf "$Red $oss_stack_name which contains the Opensearch vector database is in $stack_status state. Do you want to delete the stack ? $NC"
             printf "\n"
             options=("Yes - Delete Stack" "No - Update existing stack" "Quit")
