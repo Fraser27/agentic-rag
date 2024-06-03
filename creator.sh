@@ -198,7 +198,7 @@ then
     while [ $j -lt 50 ];
     do 
         echo 'Wait for 60 seconds. Provisioning Amazon Opensearch domain'
-        sleep 10
+        sleep 60
         stack_status_1=$(aws cloudformation describe-stacks --stack-name $oss_stack_name --region "$deployment_region" --query "Stacks[0].StackStatus")
         echo "Current Amazon Opensearch cluster Status $stack_status_1"
         if [[ "$stack_status_1" =~ "COMPLETE"|"FAILED" ]]
@@ -207,6 +207,7 @@ then
             if [[ "$stack_status_1" =~ "CREATE_COMPLETE" ]]
             then
                 echo "Good state"
+                break
             else
                 echo "Exiting due to Build failure: $oss_stack_name is in $stack_status_1 state"
                 exit 1
