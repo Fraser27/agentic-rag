@@ -172,8 +172,6 @@ then
                     printf "$Green Updating existing $oss_stack_name stack $NC"
                     aws cloudformation update-stack --stack-name $oss_stack_name --region "$deployment_region" --template-body file://opensearch-cluster.yaml --parameters ParameterKey=InstanceType,ParameterValue=$InstanceType ParameterKey=InstanceCount,ParameterValue=$InstanceCount ParameterKey=OSPassword,ParameterValue=$OSPassword ParameterKey=OSUsername,ParameterValue=$OSUsername ParameterKey=OSDomainName,ParameterValue=$OSDomainName --capabilities CAPABILITY_NAMED_IAM
                     printf "\n"
-                    printf "Wait for 60 seconds for stack updatation"
-                    sleep 60
                     ;;
                     "Quit")
                     printf "$Red Quit deployment $NC"
@@ -206,8 +204,7 @@ then
         if [[ "$stack_status" =~ "COMPLETE" || "stack_status" =~ "FAILED" ]]
         then
             echo "Build complete: $oss_stack_name : status $stack_status"
-            if [ "$stack_status" != "CREATE_COMPLETE" ]
-            then
+            if [ $stack_status != "CREATE_COMPLETE" ];then
                 echo "Exiting Due to Build failure: $oss_stack_name"
                 exit 1
             fi
