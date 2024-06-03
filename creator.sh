@@ -208,9 +208,9 @@ then
                 echo "Exiting Due to Build failure: $oss_stack_name is in $stack_status state"
                 exit 1
             fi
-            break
         else
             echo "Current Amazon Opensearch cluster Status $stack_status"
+            
         fi
     ((j++))
     done
