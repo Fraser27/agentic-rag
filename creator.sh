@@ -204,7 +204,7 @@ then
         if [[ "$stack_status_1" =~ "COMPLETE"|"FAILED" ]]
         then
             echo "Build complete: $oss_stack_name : status $stack_status_1"
-            if [ $stack_status_1 != "CREATE_COMPLETE" ];then
+            if [ "$stack_status_1" != "CREATE_COMPLETE" ];then
                 echo "Exiting Due to Build failure: $oss_stack_name is in $stack_status_1 state"
                 exit 1
             fi
