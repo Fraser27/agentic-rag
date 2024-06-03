@@ -148,18 +148,49 @@ then
         aws cloudformation create-stack --stack-name $oss_stack_name --region "$deployment_region" --template-body file://opensearch-cluster.yaml --parameters ParameterKey=InstanceType,ParameterValue=$InstanceType ParameterKey=InstanceCount,ParameterValue=$InstanceCount ParameterKey=OSPassword,ParameterValue=$OSPassword ParameterKey=OSUsername,ParameterValue=$OSUsername ParameterKey=OSDomainName,ParameterValue=$OSDomainName --capabilities CAPABILITY_NAMED_IAM
         
     else
-        echo "Updating existing CloudFormation stack: $oss_stack_name"
-        aws cloudformation update-stack --stack-name $oss_stack_name --region "$deployment_region" --template-body file://opensearch-cluster.yaml --parameters ParameterKey=InstanceType,ParameterValue=$InstanceType ParameterKey=InstanceCount,ParameterValue=$InstanceCount ParameterKey=OSPassword,ParameterValue=$OSPassword ParameterKey=OSUsername,ParameterValue=$OSUsername ParameterKey=OSDomainName,ParameterValue=$OSDomainName --capabilities CAPABILITY_NAMED_IAM
-
+        if [$stack_status != 'CREATE_COMPLETE']
+            printf "$Red $oss_stack_name which contains the Opensearch vector database is in $stack_status state. Do you want to delete the stack ? $NC"
+            printf "\n"
+            options=("Yes - Delete Stack" "No - Update existing stack" "Quit")
+            select opt in "${options[@]}"
+            do
+                case $opt in
+                    "Yes - Delete Stack")
+                    printf "$Green Deleting existing $oss_stack_name stack  $NC"
+                    aws cloudformation delete-stack --stack-name $oss_stack_name --region "$deployment_region"
+                    printf "\n"
+                    printf "Wait for 60 seconds for stack deletion"
+                    sleep 60
+                    ;;
+                    "No - Update existing stack")
+                    printf "$Green Updating existing $oss_stack_name stack $NC"
+                    aws cloudformation update-stack --stack-name $oss_stack_name --region "$deployment_region" --template-body file://opensearch-cluster.yaml --parameters ParameterKey=InstanceType,ParameterValue=$InstanceType ParameterKey=InstanceCount,ParameterValue=$InstanceCount ParameterKey=OSPassword,ParameterValue=$OSPassword ParameterKey=OSUsername,ParameterValue=$OSUsername ParameterKey=OSDomainName,ParameterValue=$OSDomainName --capabilities CAPABILITY_NAMED_IAM
+                    printf "\n"
+                    printf "Wait for 60 seconds for stack updatation"
+                    sleep 60
+                    ;;
+                    "Quit")
+                    printf "$Red Quit deployment $NC"
+                    exit 1
+                    break
+                    ;;
+                *)
+                printf "$Red Exiting, Invalid option $REPLY . Select from 1/2/3 $NC"
+                exit 1
+                ;;
+                esac
+                break
+            done
+        fi
     fi
     
-    echo "Check build status every 120 seconds. Wait for codebuild to finish"
+    echo "Check stack deployment status every 60 seconds"
     j=0
     stack_status=READY
     while [ $j -lt 50 ];
     do 
-        echo 'Wait for 120 seconds. Provisioning Amazon Opensearch domain'
-        sleep 120
+        echo 'Wait for 60 seconds. Provisioning Amazon Opensearch domain'
+        sleep 60
         stack_status=$(aws cloudformation describe-stacks --stack-name $oss_stack_name --region "$deployment_region" --query "Stacks[0].StackStatus")
         echo "Curr Status $stack_status"
         if [[ $stack_status =~ "COMPLETE" || stack_status =~ "FAILED" ]]
