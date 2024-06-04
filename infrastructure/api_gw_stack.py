@@ -147,7 +147,7 @@ class ApiGw_Stack(Stack):
                               environment={ 'VECTOR_INDEX_NAME': env_params['index_name'],
                                             'OPENSEARCH_VECTOR_ENDPOINT': collection_endpoint,
                                             'REGION': region,
-                                            'S3_BUCKET_NAME': bucket_name,
+                                            # 'S3_BUCKET_NAME': bucket_name,
                                             'EMBED_MODEL_ID': embed_model_id
                               },
                               memory_size=3000,
@@ -167,7 +167,7 @@ class ApiGw_Stack(Stack):
                                             'REGION': region,
                                             'REST_ENDPOINT_URL': rest_endpoint_url,
                                             'IS_RAG_ENABLED': is_opensearch,
-                                            'S3_BUCKET_NAME': bucket_name,
+                                            # 'S3_BUCKET_NAME': bucket_name,
                                             'EMBED_MODEL_ID': embed_model_id
                               },
                               memory_size=3000,
