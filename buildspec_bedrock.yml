@@ -12,7 +12,7 @@ phases:
     commands:
       - git clone https://github.com/Fraser27/agentic-rag.git
       - ls
-      - cd agentic_rag
+      - cd agentic-rag
       - echo build a Opensearchpy lambda layer to be used by the Amazon Bedrock Querying lambda
       - mkdir python
       - python3 -m pip install opensearch-py -t python/
