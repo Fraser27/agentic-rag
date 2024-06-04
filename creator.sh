@@ -206,7 +206,7 @@ then
             echo "Build complete: $oss_stack_name : status $stack_status_1"
             if [[ "$stack_status_1" =~ "CREATE_COMPLETE" ]]
             then
-                echo "Good state"
+                echo "Opensearch Cluster created: $oss_stack_name : status $stack_status_1"
                 break
             else
                 echo "Exiting due to Build failure: $oss_stack_name is in $stack_status_1 state"
