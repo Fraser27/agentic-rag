@@ -59,7 +59,7 @@ class ApiGw_Stack(Stack):
 
         secure_key = _cdk.aws_apigateway.ApiKey(self,
                                                 f"agent-rag-api-{env_name}",
-                                                api_key_name=str(uuid.uuid4()),
+                                                api_key_name=secret_api_key,
                                                 enabled=True,
                                                 value=secret_api_key,
                                                 description="Secure access to API's")
