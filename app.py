@@ -35,7 +35,7 @@ AgenticRAG(app, f"agentic-rag-{env_name}-stack", env=env
     # For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html
     )
 
-api_gw_stack = ApiGw_Stack(app, f'agentic-rag-{env_name}-stck')
+api_gw_stack = ApiGw_Stack(app, f'agentic-rag-api-{env_name}')
 tag_my_stack(api_gw_stack)
 app.synth()
 

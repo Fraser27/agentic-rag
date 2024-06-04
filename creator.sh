@@ -248,7 +248,7 @@ cdk synth -c environment_name=$infra_env -c current_timestamp=$CURRENT_UTC_TIMES
 echo "--- CDK deploy ---"
 CURRENT_UTC_TIMESTAMP=$(date -u +"%Y%m%d%H%M%S")
 echo Setting Tagging Lambda Image with timestamp $CURRENT_UTC_TIMESTAMP
-cdk deploy -c environment_name=$infra_env -c current_timestamp=$CURRENT_UTC_TIMESTAMP -c secret_api_key="$secret_api_key" -c is_aoss="$aoss_selected" -c is_oss=$oss_selected -c embed_model_id=$embed_model_id agenticrag"$infra_env"stack --require-approval never
+cdk deploy -c environment_name=$infra_env -c current_timestamp=$CURRENT_UTC_TIMESTAMP -c secret_api_key="$secret_api_key" -c is_aoss="$aoss_selected" -c is_oss=$oss_selected -c embed_model_id=$embed_model_id agentic-rag-"$infra_env"-stack --require-approval never
 echo "--- Get Build Container ---"
 project=agenticragcntnr"$infra_env"
 echo project: $project
@@ -298,7 +298,7 @@ then
         COLLECTION_ENDPOINT=$domain_endpoint
     fi
     
-    cdk deploy -c environment_name=$infra_env -c collection_endpoint=$COLLECTION_ENDPOINT -c current_timestamp=$CURRENT_UTC_TIMESTAMP -c secret_api_key=$secret_api_key -c is_aoss=$aoss_selected -c is_oss=$oss_selected -c embed_model_id=$embed_model_id ApiGwLlmsLambda"$infra_env"Stack --require-approval never
+    cdk deploy -c environment_name=$infra_env -c collection_endpoint=$COLLECTION_ENDPOINT -c current_timestamp=$CURRENT_UTC_TIMESTAMP -c secret_api_key=$secret_api_key -c is_aoss=$aoss_selected -c is_oss=$oss_selected -c embed_model_id=$embed_model_id agentic-rag-api-"$infra_env" --require-approval never
 
 else
     echo "Exiting. Build did not succeed."
