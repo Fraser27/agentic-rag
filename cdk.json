@@ -82,7 +82,8 @@
       "pandas_layer_name": "pandas-layer",
       "agentic-rag-streaming-socket": "agentic-rag-stream-socket",
       "agentic-rag-api": "agentic-rag-api",
-      "oss_domain_name": "oss-rag-dev-store"
+      "oss_domain_name": "oss-rag-dev-store",
+      "s3_files_data": "agentic-rag-file-store-dev"
     },
     "qa": {
       "lambda_role_name": "lambda_agentic_rag_qa",
@@ -103,7 +104,8 @@
       "pandas_layer_name": "pandas-layer",
       "agentic-rag-streaming-socket": "agentic-rag-stream-socket",
       "agentic-rag-api": "agentic-rag-api",
-      "oss_domain_name": "oss-rag-qa-store"
+      "oss_domain_name": "oss-rag-qa-store",
+      "s3_files_data": "agentic-rag-file-store-qa"
     },
     "sandbox": {
       "lambda_role_name": "lambda_agentic_rag_sandbox",
@@ -124,7 +126,8 @@
       "pandas_layer_name": "pandas-layer",
       "agentic-rag-streaming-socket": "agentic-rag-stream-socket",
       "agentic-rag-api": "agentic-rag-api",
-      "oss_domain_name": "oss-rag-sb-store"
+      "oss_domain_name": "oss-rag-sb-store",
+      "s3_files_data": "agentic-rag-file-store-sandbox"
     }
   }
 }
