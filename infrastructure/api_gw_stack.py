@@ -254,7 +254,7 @@ class ApiGw_Stack(Stack):
                                        stage_name= env_name) 
             
         html_generation_function = _cdk.aws_lambda.Function(self, f'llm_html_function_{env_name}',
-                                            function_name=f'llm-html-generator-{env_name}',
+                                            function_name=env_params['agentic-rag-html-function'],
                                             runtime=_cdk.aws_lambda.Runtime.PYTHON_3_9,
                                             memory_size=128,
                                             handler='llm_html_generator.handler',
