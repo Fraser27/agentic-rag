@@ -37,7 +37,7 @@ class ApiGw_Stack(Stack):
         
         print(f'Secret Key={secret_api_key}')
         
-        bucket_name = f'{env_params["s3_images_data"]}-{account_id}-{region}'
+        # bucket_name = f'{env_params["s3_images_data"]}-{account_id}-{region}'
         
         # Define API's
         # Base URL

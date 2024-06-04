@@ -139,6 +139,12 @@ then
     echo ' '
     printf "$Green Enter password for Amazon Opensearch cluster (The master user password must contain at least one uppercase letter, one lowercase letter, one number, and one special character) $NC"        
     read OSPassword
+
+    echo ' '
+    echo '*************************************************************'
+    echo ' '
+    printf "$Green Press Enter to proceed with deployment else ctrl+c to cancel $NC "
+    read -p " "
     
     stack_exists=$(aws cloudformation describe-stacks --stack-name "$oss_stack_name" --region "$deployment_region" --query 'Stacks[0].StackStatus')
     printf "$Green Deploying OSS cluster with password $OSPassword $NC"
@@ -224,9 +230,6 @@ fi
 echo ' '
 echo '*************************************************************'
 echo ' '
-printf "$Green Press Enter to proceed with deployment else ctrl+c to cancel $NC "
-read -p " "
-
 cd ..
 echo "--- Upgrading npm ---"
 sudo npm install n stable -g
