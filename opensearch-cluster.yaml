@@ -6,7 +6,7 @@ Parameters:
   InstanceType:
     Description: Instance Type for OpenSearch Cluster
     Type: String
-    Default: t3.medium.search
+    Default: t3.small.search
 
   InstanceCount:
     Description: Number of Instances for OpenSearch Cluster
@@ -42,6 +42,8 @@ Resources:
         InstanceType: !Ref InstanceType
         InstanceCount: !Ref InstanceCount
         ZoneAwarenessEnabled: true
+        ZoneAwarenessConfig:
+          AvailabilityZoneCount: 2
       AdvancedSecurityOptions:
         Enabled: true
         InternalUserDatabaseEnabled: true
@@ -66,4 +68,3 @@ Resources:
               AWS: '*'
             Action: 'es:*'
             Resource: '*'
-
